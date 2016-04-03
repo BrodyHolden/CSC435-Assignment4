@@ -305,7 +305,7 @@ slice
 arguments
         :   '(' ')'
         |   '(' expressionList ','? ')'
-//        |   '(' type ','? ')'             // CHANGED
+        |   '(' type ')'             // CHANGED
 //        |   '(' type ',' expressionList ','? ')'
         ;
 

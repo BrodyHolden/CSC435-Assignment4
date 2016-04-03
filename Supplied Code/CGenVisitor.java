@@ -115,6 +115,11 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
         ll.printf("  %s = bitcast %s to %s",temp,pointer.toString(),desc);
         return new LLVMValue(desc,temp,false);
     }
+    
+    private LLVMValue new_builtin(GooParser.ArgumentsContext ctx) {
+        return new_builtin(lookupType(ctx.type()));
+        
+    }
 
 	// *************** Visit methods *******************
 	
@@ -431,7 +436,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 	public LLVMValue visitPrimaryExpr(GooParser.PrimaryExprContext ctx) {
 		if (ctx.arguments() != null) {
             String funcName = ctx.primaryExpr().getText();
-            if (funcName.equals("new")) return new_builtin(Predefined.intType);
+            if (funcName.equals("new")) return new_builtin(ctx.arguments());
 			// generate code for a function call
 			LLVMValue.LLVMValueList valsList = (LLVMValue.LLVMValueList)visit(ctx.arguments());
 			ArrayList<LLVMValue> argVals = valsList.expressionList;
