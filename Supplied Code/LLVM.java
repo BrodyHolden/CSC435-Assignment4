@@ -146,10 +146,16 @@ public class LLVM {
             sb.append(nextStructNumber++);
             String name = sb.toString();
             sb.append(" = type { ");
+            int field_count = ((Type.Struct)typ).getFields().values().size();
+            int field_index = 1;
             for( Symbol sy : ((Type.Struct)typ).getFields().values() ) {
                 String st = getTypeDescriptor(sy.getType());
                 sb.append(st);
+                if (field_index != field_count) {
+                    sb.append(',');
+                }
                 sb.append(' ');
+                field_index++;
             }
             sb.append("}");
             prePrintln(sb.toString());
