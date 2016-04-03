@@ -110,10 +110,10 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
     
     private LLVMValue new_builtin (Type t) {
         LLVMValue pointer=calloc(t);
-        String t=ll.nextTemporary();
+        String temp=ll.nextTemporary();
         String desc=ll.getTypeDescriptor(t)+"*";
-        ll.printf("  %s = bitcast %s to %s",t,pointer.toString(),desc);
-        return new LLVMValue(desc,t,false);
+        ll.printf("  %s = bitcast %s to %s",temp,pointer.toString(),desc);
+        return new LLVMValue(desc,temp,false);
     }
 
 	// *************** Visit methods *******************
