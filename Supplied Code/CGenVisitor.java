@@ -523,7 +523,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
         if (ctx.unaryop().getText().equals("-")) {
             LLVMValue operand=visit(ctx.unaryExpr());
             LLVMValue neg1=new LLVMValue(operand.getType(),"-1",false);
-            if ((operand.getType().equals("float")) || (operand.getType().equals("double")) return ll.writeFltInst("fmul",operand,neg1);
+            if (operand.getType().equals("float") || operand.getType().equals("double")) return ll.writeFltInst("fmul",operand,neg1);
             return ll.writeIntInst("mul",operand,neg1);
         }
 		return visitChildren(ctx);
