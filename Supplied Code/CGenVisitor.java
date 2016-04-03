@@ -537,6 +537,14 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
             if (operand.isReference()) operand=ll.dereference(operand);
             return new LLVMValue(demoted,operand.getValue(),true);
         }
+        if (ctx.unaryOp().getText().equals("!")) {
+            LLVMValue operand = visit(ctx.unaryExpr());
+            LLVMValue o = ll.dereference(operand);
+            assert(o.getType() == "i1");
+            String rv = ll.nextTemporary();
+            ll.printf("  %s = xor i1 %s, 1\n", rv, o.getValue());
+            return new LLVMValue(o.getType(), rv, false);
+        }
 		return visitChildren(ctx);
 	}
 
