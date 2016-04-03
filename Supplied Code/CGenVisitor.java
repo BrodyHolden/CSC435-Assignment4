@@ -640,6 +640,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
             LLVMValue cond=(c.condition()!=null) ? visit(c.condition()) : null;
             if (cond!=null) ll.writeCondBranch(cond,bodyLabel,endLabel);
             else ll.writeBranch(bodyLabel);
+            ll.writeLabel(bodyLabel);
             visit(ctx.block());
             ll.writeBranch(incLabel);
             ll.writeLabel(endLabel);
