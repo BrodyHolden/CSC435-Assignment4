@@ -510,11 +510,37 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 			return ll.writeCompInst(relop, lhs, rhs);
 		}
 	}
-	
-	@Override
-	public LLVMValue visitBoolExp(GooParser.BoolExpContext ctx) {
-		return visitChildren(ctx);
-	}
+    
+    @Override
+    private LLVMValue visitAndOrExp (GooParser.ExpressionContext ctx, boolean a) {
+        String cont=ll.createBBLabel("continue");
+        String fail=ll.createBBLabel("fail");
+        String succeed=ll.createBBLabel("succeed");
+        String end=ll.createBBLabel("end");
+        String result=ll.nextTemporary();
+        LLVMValue lhs=visit(ctx.expression(0));
+        ll.writeCondBranch(lhs,a ? cont : succeed,a ? fail : cont);
+        ll.writeLabel(cont);
+        LLVMValue rhs=visit(ctx.expression(1));
+        ll.writeCondBranch(rhs,succeed,fail);
+        ll.writeLabel(succeed);
+        ll.writeBranch(end);
+        ll.writeLabel(fail);
+        ll.writeBranch(end);
+        ll.writeLabel(end);
+        ll.printf("%s = phi i1 [ 0, %%%s ], [ 1, %%%s ]",result,fail,succeed);
+        return new LLVMValue("i1",result,false);
+    }
+    
+    @Override
+    public LLVMValue visitAndExp(GooParser.AndExpContext ctx) {
+        return visitAndOrExp(ctx,true);
+    }
+    
+    @Override
+    public LLVMValue visitOrExp(GooParser.OrExpContext ctx) {
+        return visitAndOrExp(ctx,false);
+    }
 
 	@Override
 	public LLVMValue visitUnaryExpr(GooParser.UnaryExprContext ctx) {
