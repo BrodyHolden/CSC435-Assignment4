@@ -516,7 +516,6 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
         String fail=ll.createBBLabel("fail");
         String succeed=ll.createBBLabel("succeed");
         String end=ll.createBBLabel("end");
-        String result=ll.nextTemporary();
         LLVMValue lhs=visit(ctx.expression(0));
         ll.writeCondBranch(lhs,a ? cont : succeed,a ? fail : cont);
         ll.writeLabel(cont);
@@ -527,6 +526,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
         ll.writeLabel(fail);
         ll.writeBranch(end);
         ll.writeLabel(end);
+        String result=ll.nextTemporary();
         ll.printf("  %s = phi i1 [ 0, %%%s ], [ 1, %%%s ]\n",result,fail,succeed);
         return new LLVMValue("i1",result,false);
     }
