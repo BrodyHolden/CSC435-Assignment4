@@ -25,6 +25,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 	Map<Symbol,LLVMValue> localVariables = new HashMap<Symbol,LLVMValue>();
 	Symbol packageSymbol = null;
 	String packageName = null;
+    boolean calloc_declared = false;
 
     LLVM ll;
 	
@@ -80,6 +81,27 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
         	return lookupType((ParserRuleContext)ctx.getChild(0));
         return null;
 	}
+    
+    private LLVMValue size (Type t) {
+        return new LLVMValue("i64",8,false);
+    }
+    
+    private void declare_calloc() {
+        if (calloc_declared) return;
+        ll.prePrintf("declare i8* @calloc(i64, i64) #1\n");
+        calloc_declared=true;
+    }
+    
+    private LLVMValue calloc (LLVMValue num, LLVMValue size) {
+        declare_calloc();
+        assert(num.getType().equal("i64"));
+        assert(size.getType().equal("i64"));
+        num=ll.dereference(num);
+        size=ll.dereference(size);
+        String t=ll.nextTemporary();
+        ll.printf("  %s = call i8* @calloc(%s, %s)\n",t,num.toString(),size.toString());
+        return new LLVMValue("i8*",t,false);
+    }
 
 	// *************** Visit methods *******************
 	
@@ -395,6 +417,8 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 	@Override
 	public LLVMValue visitPrimaryExpr(GooParser.PrimaryExprContext ctx) {
 		if (ctx.arguments() != null) {
+            String funcName = ctx.primaryExpr().getText();
+            if (funcName.equals("new")) return calloc(new LLVMValue("i64","8",false),new LLVMValue("i64","1",false));
 			// generate code for a function call
 			LLVMValue.LLVMValueList valsList = (LLVMValue.LLVMValueList)visit(ctx.arguments());
 			ArrayList<LLVMValue> argVals = valsList.expressionList;
@@ -406,7 +430,6 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 				argVals.set(k++, exp);
 				
 			}
-			String funcName = ctx.primaryExpr().getText();
 			Symbol funcSym = currentScope.resolve(funcName);
 			if (funcSym != null && funcSym.getKind() == Symbol.Kind.TypeName) {
         	    Type toType = funcSym.getType();
