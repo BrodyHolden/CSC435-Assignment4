@@ -128,7 +128,7 @@ public class LLVM {
         if (typ == Predefined.intType) return "i32";
         if (typ == Predefined.runeType) return "i8";
         if (typ == Predefined.stringType) return "i8*";
-        if (typ == Predefined.boolType) return "i8";
+        if (typ == Predefined.boolType) return "i1";
         if (typ == Predefined.floatType) return "double";
         if (typ == Type.voidType) return "void";
 
