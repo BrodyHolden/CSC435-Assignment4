@@ -636,6 +636,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
             ll.writeBranch(condLabel);
             ll.writeLabel(incLabel);
             if (c.postStmt()!=null) visit(c.postStmt());
+            ll.writeBranch(condLabel);
             ll.writeLabel(condLabel);
             LLVMValue cond=(c.condition()!=null) ? visit(c.condition()) : null;
             if (cond!=null) ll.writeCondBranch(cond,bodyLabel,endLabel);
@@ -660,6 +661,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
         String startLabel=ll.createBBLabel("start");
         String bodyLabel=ll.createBBLabel("body");
         String endLabel=ll.createBBLabel("end");
+        ll.writeBranch(startLabel);
         ll.writeLabel(startLabel);
         LLVMValue cond=visit(ctx.condition());
         ll.writeCondBranch(cond,bodyLabel,endLabel);
