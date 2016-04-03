@@ -314,8 +314,8 @@ expression              // CHANGED
         |   expression mulOp expression     # NumExp
         |   expression addOp expression     # NumExp
         |   expression relOp expression     # RelExp
-        |   expression '&&' expression      # AndExp
-        |   expression '||' expression      # OrExp
+        |   expression '&&' expression      # BoolExp
+        |   expression '||' expression      # BoolExp
         ;
 
 unaryExpr

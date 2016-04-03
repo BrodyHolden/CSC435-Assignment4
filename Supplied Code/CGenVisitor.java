@@ -533,13 +533,8 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
     }
     
     @Override
-    public LLVMValue visitAndExp(GooParser.AndExpContext ctx) {
-        return visitAndOrExp(ctx,true);
-    }
-    
-    @Override
-    public LLVMValue visitOrExp(GooParser.OrExpContext ctx) {
-        return visitAndOrExp(ctx,false);
+    public LLVMValue visitBoolExp(GooParser.BoolExpContext ctx) {
+        return visitAndOrExp(ctx,ctx.children().get(1).getText().equals("&&"));
     }
 
 	@Override
