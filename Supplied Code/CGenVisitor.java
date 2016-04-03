@@ -627,18 +627,18 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
     @Override
     public LLVMValue visitForStmt(GooParser.ForStmtContext ctx) {
         GooParser.ForClauseContext c=ctx.forClause();
-        if (c) {
+        if (c!=null) {
             String incLabel=ll.createBBLabel("inc");
             String condLabel=ll.createBBLabel("cond");
             String bodyLabel=ll.createBBLabel("body");
             String endLabel=ll.createBBLabel("end");
-            if (c.initStmt()) visit(c.initStmt());
+            if (c.initStmt()!=null) visit(c.initStmt());
             ll.writeBranch(condLabel);
             ll.writeLabel(incLabel);
-            if (c.postStmt()) visit(c.postStmt());
+            if (c.postStmt()!=null) visit(c.postStmt());
             ll.writeLabel(condLabel);
-            LLVMValue cond=c.condition() ? visit(c.condition()) : null;
-            if (cond) ll.writeCondBranch(cond,bodyLabel,endLabel);
+            LLVMValue cond=(c.condition()!=null) ? visit(c.condition()) : null;
+            if (cond!=null) ll.writeCondBranch(cond,bodyLabel,endLabel);
             else ll.writeBranch(bodyLabel);
             visit(ctx.block());
             ll.writeBranch(incLabel);
