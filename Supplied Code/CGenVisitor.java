@@ -83,7 +83,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 	}
     
     private LLVMValue size (Type t) {
-        return new LLVMValue("i64",8,false);
+        return new LLVMValue("i64","8",false);
     }
     
     private void declare_calloc() {
@@ -94,8 +94,8 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
     
     private LLVMValue calloc (LLVMValue num, LLVMValue size) {
         declare_calloc();
-        assert(num.getType().equal("i64"));
-        assert(size.getType().equal("i64"));
+        assert(num.getType().equals("i64"));
+        assert(size.getType().equals("i64"));
         num=ll.dereference(num);
         size=ll.dereference(size);
         String t=ll.nextTemporary();
