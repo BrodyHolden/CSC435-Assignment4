@@ -595,6 +595,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 
 	@Override
 	public Type visitArguments(GooParser.ArgumentsContext ctx) {
+        if (ctx.type()!=null) return associateType(ctx,visit(ctx.type()));
 		if (ctx.expressionList() == null)
 			return associateType(ctx,Type.newTypeList(new Type[0]));
 		LinkedList<Type> list = new LinkedList<Type>();
