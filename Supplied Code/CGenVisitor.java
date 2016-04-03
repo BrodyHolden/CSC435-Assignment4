@@ -630,7 +630,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
         if (c) {
             String incLabel=ll.createBBLabel("inc");
             String condLabel=ll.createBBLabel("cond");
-            String bodyLabel=ll.ll.writeLabel(incLabel);("body");
+            String bodyLabel=ll.createBBLabel("body");
             String endLabel=ll.createBBLabel("end");
             if (c.initStmt()) visit(c.initStmt());
             ll.writeBranch(condLabel);
