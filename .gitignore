@@ -13,3 +13,7 @@ hs_err_pid*
 
 # gedit created backup files
 *~
+
+# llvm ir files generated from our tests
+OurTests/c/*.ll
+OurTests/goo/*.ll
