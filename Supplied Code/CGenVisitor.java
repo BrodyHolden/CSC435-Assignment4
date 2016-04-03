@@ -511,8 +511,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 		}
 	}
     
-    @Override
-    private LLVMValue visitAndOrExp (GooParser.ExpressionContext ctx, boolean a) {
+    private LLVMValue visitAndOrExp (GooParser.BoolExpContext ctx, boolean a) {
         String cont=ll.createBBLabel("continue");
         String fail=ll.createBBLabel("fail");
         String succeed=ll.createBBLabel("succeed");
