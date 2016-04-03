@@ -102,6 +102,19 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
         ll.printf("  %s = call i8* @calloc(%s, %s)\n",t,num.toString(),size.toString());
         return new LLVMValue("i8*",t,false);
     }
+    
+    private LLVMValue calloc (Type t) {
+        //  TODO: Improve this
+        return calloc(size(t),new LLVMValue("i64","1",false));
+    }
+    
+    private LLVMValue new_builtin (Type t) {
+        LLVMValue pointer=calloc(t);
+        String t=ll.nextTemporary();
+        String desc=ll.getTypeDescriptor(t)+"*";
+        ll.printf("  %s = bitcast %s to %s",t,pointer.toString(),desc);
+        return new LLVMValue(desc,t,false);
+    }
 
 	// *************** Visit methods *******************
 	
@@ -418,7 +431,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 	public LLVMValue visitPrimaryExpr(GooParser.PrimaryExprContext ctx) {
 		if (ctx.arguments() != null) {
             String funcName = ctx.primaryExpr().getText();
-            if (funcName.equals("new")) return calloc(new LLVMValue("i64","8",false),new LLVMValue("i64","1",false));
+            if (funcName.equals("new")) return new_builtin(Predefined.intType);
 			// generate code for a function call
 			LLVMValue.LLVMValueList valsList = (LLVMValue.LLVMValueList)visit(ctx.arguments());
 			ArrayList<LLVMValue> argVals = valsList.expressionList;
