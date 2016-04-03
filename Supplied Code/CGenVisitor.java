@@ -527,7 +527,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
         ll.writeLabel(fail);
         ll.writeBranch(end);
         ll.writeLabel(end);
-        ll.printf("%s = phi i1 [ 0, %%%s ], [ 1, %%%s ]\n",result,fail,succeed);
+        ll.printf("  %s = phi i1 [ 0, %%%s ], [ 1, %%%s ]\n",result,fail,succeed);
         return new LLVMValue("i1",result,false);
     }
     
