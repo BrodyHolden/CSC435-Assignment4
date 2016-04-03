@@ -162,14 +162,29 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 
     @Override
 	public LLVMValue visitStructType(GooParser.StructTypeContext ctx) {
-		return visitChildren(ctx);
+        LLVMValue c = visitChildren(ctx);
+
+        ll.printf(";visitStructType() %s\n", c);
+
+        return c;
 	}
 
 	// fieldDeclList:  /* empty */ |  (fieldDecl ';')* fieldDecl optSemi ;
-	
+    @Override
+    public LLVMValue visitFieldDeclList(GooParser.FieldDeclListContext ctx) {
+        LLVMValue c = visitChildren(ctx);
+        ll.printf(";visitFieldDecList() %s\n", c);
+        return c;
+    }
+
     @Override
 	public LLVMValue visitFieldDecl(GooParser.FieldDeclContext ctx) {
-		return visitChildren(ctx);
+        
+		LLVMValue c = visitChildren(ctx);
+
+        ll.printf(";visitFieldDecl() %s\n", c);
+
+        return c;
 	}
 
     @Override
@@ -481,7 +496,25 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 				return null;
 			}
 			// it's a field selection in a struct
-			assert false; // unimplemented
+//			assert false; // unimplemented
+
+            String fieldName = ctx.selector().getText();
+            ll.printf(";visitPrimaryExpr() field selector: %s\n", fieldName);
+            String rv = ll.nextTemporary();
+            //ll.printf(";%1 = getelementptr inbounds %struct.foo, %struct.foo* %f, i32 0, i32 0");
+            String structName = ctx.primaryExpr().getText();
+            Symbol structSymbol = currentScope.resolve(structName);
+            Type.Struct struct = (Type.Struct)structSymbol.getType();
+
+            LinkedHashMap<String, Symbol> fields = struct.getFields();
+            int pos = new ArrayList<String>(fields.keySet()).indexOf(fieldName);
+
+
+            ll.printf("; structName=%s structSymbol=%s\n", structName, struct);
+
+            ll.printf(";%s = getelementptr inbounds %s, %s* %s, i32 0, i32 0\n", rv, structName, structName, "TODO ");
+            return new LLVMValue("i32", rv, true);  // TODO change i32 ???
+
 		}
 		if (ctx.index() != null) {
 		    // create reference to an array element
@@ -679,6 +712,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 				ReportError.error(ctx, "unrecognized assignment operator: "+op);
 			    break;
 			}
+            ll.printf(";visitAssignment() src=%s dest=%s\n", src, dest);   // TODO
 			ll.store(src, dest);
 		}
 		return null;
