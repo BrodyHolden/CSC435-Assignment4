@@ -117,7 +117,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
     }
     
     private LLVMValue new_builtin(GooParser.ArgumentsContext ctx) {
-        return new_builtin(lookupType(ctx.type()));
+        return new_builtin(lookupType(ctx));
         
     }
 
