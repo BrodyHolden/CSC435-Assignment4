@@ -518,6 +518,8 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 
 	@Override
 	public LLVMValue visitUnaryExpr(GooParser.UnaryExprContext ctx) {
+        if (ctx.primaryExpr()!=null) return visit(ctx.primaryExpr());
+        if (ctx.unaryOp().getText().equals("+")) return visit(ctx.unaryExpr());
 		return visitChildren(ctx);
 	}
 
