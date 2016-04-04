@@ -162,29 +162,14 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 
     @Override
 	public LLVMValue visitStructType(GooParser.StructTypeContext ctx) {
-        LLVMValue c = visitChildren(ctx);
-
-        ll.printf(";visitStructType() %s\n", c);
-
-        return c;
+        return visitChildren(ctx);
 	}
 
 	// fieldDeclList:  /* empty */ |  (fieldDecl ';')* fieldDecl optSemi ;
-    @Override
-    public LLVMValue visitFieldDeclList(GooParser.FieldDeclListContext ctx) {
-        LLVMValue c = visitChildren(ctx);
-        ll.printf(";visitFieldDecList() %s\n", c);
-        return c;
-    }
 
     @Override
 	public LLVMValue visitFieldDecl(GooParser.FieldDeclContext ctx) {
-        
-		LLVMValue c = visitChildren(ctx);
-
-        ll.printf(";visitFieldDecl() %s\n", c);
-
-        return c;
+        return visitChildren(ctx);
 	}
 
     @Override
@@ -498,23 +483,16 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 			// it's a field selection in a struct
 //			assert false; // unimplemented
 
-            String fieldName = ctx.selector().getText();
-            ll.printf(";visitPrimaryExpr() field selector: %s\n", fieldName);
-            String rv = ll.nextTemporary();
-            //ll.printf(";%1 = getelementptr inbounds %struct.foo, %struct.foo* %f, i32 0, i32 0");
-            String structName = ctx.primaryExpr().getText();
-            Symbol structSymbol = currentScope.resolve(structName);
-            Type.Struct struct = (Type.Struct)structSymbol.getType();
+            String fieldName = ctx.selector().getText().substring(1);
+            ll.printf(";visitPrimaryExpr() fieldName=%s\n", fieldName);
 
-            LinkedHashMap<String, Symbol> fields = struct.getFields();
-            int pos = new ArrayList<String>(fields.keySet()).indexOf(fieldName);
+            LLVMValue structPtr = visit(ctx.primaryExpr());
+            ll.printf(";visitPrimaryExpr() structPtr=%s\n", structPtr);
 
+            Type.Struct structType = (Type.Struct)lookupType(ctx.primaryExpr());
+            ll.printf(";visitPrimaryExpr() structType=%s\n", structType);
 
-            ll.printf("; structName=%s structSymbol=%s\n", structName, struct);
-
-            ll.printf(";%s = getelementptr inbounds %s, %s* %s, i32 0, i32 0\n", rv, structName, structName, "TODO ");
-            return new LLVMValue("i32", rv, true);  // TODO change i32 ???
-
+            return LLVMExtras.elementReference(ll, structType, structPtr, fieldName);
 		}
 		if (ctx.index() != null) {
 		    // create reference to an array element
@@ -712,7 +690,7 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 				ReportError.error(ctx, "unrecognized assignment operator: "+op);
 			    break;
 			}
-            ll.printf(";visitAssignment() src=%s dest=%s\n", src, dest);   // TODO
+
 			ll.store(src, dest);
 		}
 		return null;
