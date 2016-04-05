@@ -1,8 +1,8 @@
 // GooMain.java
 //
 // TEAM MEMBERS:
-//     * PUT FIRST TEAM MEMBER NAME HERE
-//     * PUT SECOND TEAM MEMBER NAME HERE
+//     * Brody Holden
+//     * Robert Leahy
 //
 // Main program which invokes the various compiler phases:
 // lexer/parser, symbol table construction, type checking ...
