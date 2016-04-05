@@ -63,7 +63,7 @@ public class LLVMExtras {
 			return result;
 		Type typ = sy.getType();
 		String name = ll.nextTemporary();
-		String gdesc = ll.createTypeDescriptor(typ);
+		String gdesc = ll.getTypeDescriptor(typ);
 		ll.printf("  %s = alloca %s, align %d ; %s\n",
 					name, gdesc, ll.ptrAlign, sy.getName());
 		return new LLVMValue(gdesc, name, true);
@@ -113,8 +113,9 @@ public class LLVMExtras {
 			fnum++;
 		}
 		assert(fldType != null);
-		String ftyp = ll.createTypeDescriptor(fldType);
-		String styp = ll.createTypeDescriptor(strType);
+        String ftyp = ll.getTypeDescriptor(fldType);
+        String styp = ll.getTypeDescriptor(strType);
+
 		String rv1 = ll.nextTemporary();
 		ll.printf("  %s = getelementptr inbounds %s, %s* %s, i32 0, i32 %d\n",
 			rv1, styp, styp, strPtr.getValue(), fnum);
