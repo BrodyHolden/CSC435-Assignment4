@@ -3,5 +3,5 @@ package main
 import "fmt"
 
 func main() {
-    var p *int = new()
+    var p *[5]int = new([5]int)
 }

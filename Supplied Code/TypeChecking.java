@@ -53,6 +53,17 @@ public class TypeChecking {
 				return true;
 			}
 		}
+		if ((srcTyp instanceof Type.Pointer) && (destTyp instanceof Type.Pointer)) return checkAssignability(
+			((Type.Pointer)srcTyp).getBaseType(),
+			((Type.Pointer)destTyp).getBaseType(),
+			ctx
+		);
+		if ((srcTyp instanceof Type.Array) && (destTyp instanceof Type.Array)) {
+			Type.Array s=(Type.Array)srcTyp;
+			Type.Array d=(Type.Array)destTyp;
+			if (s.getSize()!=d.getSize()) return false;
+			return checkAssignability(s.getElementType(),d.getElementType(),ctx);
+		}
 
 		ReportError.error(ctx, "type "+srcTyp.toString()+" is incompatible with "+destTyp.toString());
 		return false;

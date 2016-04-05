@@ -81,9 +81,22 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
         	return lookupType((ParserRuleContext)ctx.getChild(0));
         return null;
 	}
+	
+	private int size_impl (Type t) {
+		if (t instanceof Type.Struct) {
+			int size=0;
+			for (Symbol s : ((Type.Struct)t).getFields().values()) size+=size_impl(s.getType());
+			return size;
+		}
+		if (t instanceof Type.Array) {
+			Type.Array a=(Type.Array)t;
+			return size_impl(a.getElementType())*a.getSize();
+		}
+		return 8;
+	}
     
     private LLVMValue size (Type t) {
-        return new LLVMValue("i64","8",false);
+        return new LLVMValue("i64",String.valueOf(size_impl(t)),false);
     }
     
     private void declare_calloc() {
@@ -104,7 +117,6 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
     }
     
     private LLVMValue calloc (Type t) {
-        //  TODO: Improve this
         return calloc(size(t),new LLVMValue("i64","1",false));
     }
     
@@ -112,13 +124,8 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
         LLVMValue pointer=calloc(t);
         String temp=ll.nextTemporary();
         String desc=ll.getTypeDescriptor(t)+"*";
-        ll.printf("  %s = bitcast %s to %s",temp,pointer.toString(),desc);
+        ll.printf("  %s = bitcast %s to %s\n",temp,pointer.toString(),desc);
         return new LLVMValue(desc,temp,false);
-    }
-    
-    private LLVMValue new_builtin(GooParser.ArgumentsContext ctx) {
-        return new_builtin(lookupType(ctx));
-        
     }
 
 	// *************** Visit methods *******************
@@ -434,9 +441,9 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 
 	@Override
 	public LLVMValue visitPrimaryExpr(GooParser.PrimaryExprContext ctx) {
+		if (ctx.newExpr()!=null) return visit(ctx.newExpr());
 		if (ctx.arguments() != null) {
             String funcName = ctx.primaryExpr().getText();
-            if (funcName.equals("new")) return new_builtin(ctx.arguments());
 			// generate code for a function call
 			LLVMValue.LLVMValueList valsList = (LLVMValue.LLVMValueList)visit(ctx.arguments());
 			ArrayList<LLVMValue> argVals = valsList.expressionList;
@@ -495,6 +502,11 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 		    return LLVMExtras.elementReference(ll, arrType, arrPtr, index);
 		}
 		return visitChildren(ctx);
+	}
+	
+	@Override
+	public LLVMValue visitNewExpr(GooParser.NewExprContext ctx) {
+		return new_builtin(lookupType(ctx));
 	}
 
 	// selector:   '.' Identifier ;

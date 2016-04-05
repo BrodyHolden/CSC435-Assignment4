@@ -278,12 +278,17 @@ value
 primaryExpr
         :   operand
         |	conversion
+		|	newExpr
         |   primaryExpr selector
         |   primaryExpr index
         |	primaryExpr slice
 //        |	primaryExpr typeAssertion       // CHANGED
         |	primaryExpr arguments
         ;
+
+newExpr
+		:	'new' '(' type ')'
+		;
 
 selector
         :   '.' Identifier
@@ -305,7 +310,7 @@ slice
 arguments
         :   '(' ')'
         |   '(' expressionList ','? ')'
-        |   '(' type ')'             // CHANGED
+//        |   '(' type ')'             // CHANGED
 //        |   '(' type ',' expressionList ','? ')'
         ;
 

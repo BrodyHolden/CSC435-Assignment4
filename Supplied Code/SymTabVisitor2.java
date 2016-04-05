@@ -496,6 +496,10 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 
 	@Override
 	public Type visitPrimaryExpr(GooParser.PrimaryExprContext ctx) {
+		//	Was trying to just visit the NewExprContext but apparently
+		//	visitChildren on that (which the default implementation calls)
+		//	just returned null...
+		if (ctx.newExpr()!=null) return Type.newPointerType(associateType(ctx,associateType(ctx.newExpr(),visit(ctx.newExpr().type()))));
 		if (ctx.operand() != null)
 			return associateType(ctx,visit(ctx.operand()));
 		if (ctx.conversion() != null)
@@ -595,7 +599,6 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 
 	@Override
 	public Type visitArguments(GooParser.ArgumentsContext ctx) {
-        if (ctx.type()!=null) return associateType(ctx,visit(ctx.type()));
 		if (ctx.expressionList() == null)
 			return associateType(ctx,Type.newTypeList(new Type[0]));
 		LinkedList<Type> list = new LinkedList<Type>();
