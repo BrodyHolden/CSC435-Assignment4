@@ -480,18 +480,11 @@ public class CGenVisitor extends GooBaseVisitor<LLVMValue> {
 				packageName = pkgName;
 				return null;
 			}
+
 			// it's a field selection in a struct
-//			assert false; // unimplemented
-
             String fieldName = ctx.selector().getText().substring(1);
-            ll.printf(";visitPrimaryExpr() fieldName=%s\n", fieldName);
-
             LLVMValue structPtr = visit(ctx.primaryExpr());
-            ll.printf(";visitPrimaryExpr() structPtr=%s\n", structPtr);
-
             Type.Struct structType = (Type.Struct)lookupType(ctx.primaryExpr());
-            ll.printf(";visitPrimaryExpr() structType=%s\n", structType);
-
             return LLVMExtras.elementReference(ll, structType, structPtr, fieldName);
 		}
 		if (ctx.index() != null) {
